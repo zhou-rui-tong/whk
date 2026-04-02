@@ -77,9 +77,10 @@
         .gender-select { display: flex; gap: 20px; justify-content: center; margin: 15px 0; }
         .gender-select label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
         .stock-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
-        .stock-table th, .stock-table td { padding: 6px; text-align: center; border: 1px solid var(--border); }
+        .stock-table th, .stock-table td { padding: 8px 6px; text-align: center; border: 1px solid var(--border); vertical-align: middle; }
         .stock-table th { background: var(--primary); color: white; }
-        .stock-input { width: 70px; padding: 4px; text-align: center; }
+        .stock-input { width: 60px; padding: 4px; text-align: center; }
+        .stock-table button { margin: 2px; padding: 4px 8px; font-size: 0.8rem; }
         .exam-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         .exam-table th, .exam-table td { padding: 8px; text-align: center; border: 1px solid var(--border); }
         .exam-table th { background: var(--primary); color: white; }
@@ -174,7 +175,23 @@
         <div id="train-panel" class="sub-panel hidden"><h4>选择特训科目 (价格随等级提升)</h4><div class="subject-buttons" id="train-subjects"></div><button onclick="hidePanels()">取消</button></div>
         <div id="date-panel" class="sub-panel hidden"><h4>和谁约会？(花费随机20~80💰)</h4><div class="love-buttons" id="date-love"></div><button onclick="hidePanels()">取消</button></div>
         <div id="work-panel" class="sub-panel hidden"><h4>选择打工方式</h4><div class="subject-buttons" id="work-options"><button onclick="doWork('easy')">发传单</button><button onclick="doWork('hard')">工地搬砖</button><button onclick="doWork('tutor')">家教</button></div><button onclick="hidePanels()">取消</button></div>
-        <div id="loan-panel" class="sub-panel hidden"><h4>💸 贷款管理</h4><p>🏦 银行贷款: <span id="panel-bank-loan">0</span>元 (上限: <span id="bank-limit">10000</span>元, 日息1%, 每30天强制还清)</p><p>⚠️ 高利贷: <span id="panel-usury-loan">0</span>元 (日息<span id="usury-rate-panel">7</span>%, 高考后必须还清)</p><div><button onclick="takeBankLoan(1000)">借银行贷款1000</button><button onclick="takeBankLoan(5000)">借5000</button><button onclick="takeBankLoan(10000)">借10000</button></div><div><button onclick="takeUsuryLoan(1000)">借高利贷1000</button><button onclick="takeUsuryLoan(5000)">借5000</button><button onclick="takeUsuryLoan(10000)">借10000</button></div><div><button onclick="repayAllBankLoan()" class="btn-success">一键还清银行贷款</button><button onclick="repayAllUsuryLoan()" class="btn-danger">一键还清高利贷</button></div><button onclick="hidePanels()">关闭</button></div>
+        <div id="loan-panel" class="sub-panel hidden"><h4>💸 贷款管理</h4>
+            <p>🏦 银行贷款: <span id="panel-bank-loan">0</span>元 (上限: <span id="bank-limit">10000</span>元, 日息1%, 每30天强制还清)</p>
+            <p>⚠️ 高利贷: <span id="panel-usury-loan">0</span>元 (日息<span id="usury-rate-panel">7</span>%, 高考后必须还清)</p>
+            <div><button onclick="takeBankLoan(1000)">借银行贷款1000</button><button onclick="takeBankLoan(5000)">借5000</button><button onclick="takeBankLoan(10000)">借10000</button></div>
+            <div><button onclick="takeUsuryLoan(1000)">借高利贷1000</button><button onclick="takeUsuryLoan(5000)">借5000</button><button onclick="takeUsuryLoan(10000)">借10000</button></div>
+            <div style="margin-top:10px;">
+                <label>银行贷款还款金额: <input type="number" id="bank-repay-amount" placeholder="金额" style="width:100px;"></label>
+                <button onclick="repayBankLoanPartial()">部分还款</button>
+                <button onclick="repayAllBankLoan()">一键还清</button>
+            </div>
+            <div style="margin-top:10px;">
+                <label>高利贷还款金额: <input type="number" id="usury-repay-amount" placeholder="金额" style="width:100px;"></label>
+                <button onclick="repayUsuryLoanPartial()">部分还款</button>
+                <button onclick="repayAllUsuryLoan()">一键还清</button>
+            </div>
+            <button onclick="hidePanels()">关闭</button>
+        </div>
         <div id="teacher-panel" class="sub-panel hidden" style="border:2px solid var(--danger);"><h4>👨‍🏫 班主任提问</h4><p id="teacher-question"></p><div><button onclick="handleTeacher('try')">尝试回答</button><button onclick="handleTeacher('punish')">站着罚站</button></div></div>
         <div id="loveletter-panel" class="sub-panel hidden" style="border:2px solid var(--love);"><h4>💌 发现情书</h4><p id="loveletter-desc"></p><div><button onclick="handleLoveLetter('find')">花钱寻找</button><button onclick="handleLoveLetter('throw')">扔掉</button></div></div>
         <div id="phone-panel" class="sub-panel hidden" style="border:2px solid var(--danger);"><h4>📱 手机被没收</h4><p id="phone-desc"></p><button onclick="closePhonePanel()">接受现实</button></div>
@@ -183,7 +200,7 @@
         <div id="parent-panel" class="sub-panel hidden" style="border:2px solid var(--primary);"><h4>👨‍👩‍👧 父母来电</h4><p id="parent-desc"></p><div><button onclick="closeParentPanel()">知道了</button></div></div>
         <div id="caught-panel" class="sub-panel hidden" style="border:2px solid var(--danger);"><h4>💔 脚踏两条船被发现了</h4><p id="caught-desc"></p><button onclick="closeCaughtPanel()">面对现实</button></div>
         <div id="suicide-panel" class="sub-panel hidden" style="border:2px solid black; background:#2c3e50; color:white;"><h4>😱 悲剧发生</h4><p id="suicide-desc"></p><button onclick="closeSuicidePanel()">……</button></div>
-        <div id="stock-panel" class="sub-panel hidden"><h4>📈 股票交易</h4><div id="stock-list"></div><button onclick="sellAllStocks()" class="btn-accent">一键卖出全部</button><button onclick="hidePanels()">关闭</button></div>
+        <div id="stock-panel" class="sub-panel hidden"><h4>📈 股票交易</h4><div id="stock-list"></div><button onclick="hidePanels()">关闭</button></div>
         <div id="sick-gaokao-panel" class="sub-panel hidden" style="border:2px solid var(--danger); background:#fff0f0;"><h4>🏥 高考前病倒</h4><p id="sick-gaokao-desc"></p><div style="display:flex; gap:10px; justify-content:center;"><button onclick="handleSickGaokao('retry')" class="btn-accent">复读</button><button onclick="handleSickGaokao('quit')" class="btn-danger">步入社会</button></div></div>
         <div class="event-log" id="log-area"><div class="log-entry">✨ 重生回到高考前，这一次要逆天改命！</div></div>
     </div>
@@ -199,7 +216,7 @@
             <table class="exam-table" id="exam-table">
                 <thead id="exam-thead"></thead>
                 <tbody id="exam-tbody"></tbody>
-            </table>
+            表
         </div>
         <div style="text-align:center; margin-top:20px;">
             <button id="exam-close-btn" class="hidden" onclick="closeExam()">确认成绩</button>
@@ -242,244 +259,15 @@ let stocks = [
 ];
 let businessWars = []; // 商战 {stockIdx1, stockIdx2, duration}
 
-function updateStocks() {
-    // 保存旧价格用于趋势计算
-    for (let i = 0; i < stocks.length; i++) stocks[i].prevPrice = stocks[i].price;
-    // 价格更新
-    for (let i = 0; i < stocks.length; i++) {
-        let stock = stocks[i];
-        let inWar = businessWars.some(w => w.stockIdx1 === i || w.stockIdx2 === i);
-        // 随机事件：2%概率触发利好/利空
-        if (Math.random() < 0.02) {
-            let isGood = Math.random() < 0.5;
-            let baseAmplitude = 0.2 + Math.random() * 0.6;
-            let changePercent = isGood ? baseAmplitude * STOCK_GAIN_MULTIPLIER[stockLevel] : -baseAmplitude * STOCK_LOSS_MULTIPLIER[stockLevel];
-            let eventDesc = isGood ? `🎉 ${stock.name} 发布重大利好！股价飙升 ${(changePercent*100).toFixed(1)}%` : `💥 ${stock.name} 爆出重大利空！股价暴跌 ${(-changePercent*100).toFixed(1)}%`;
-            let newPrice = stock.price * (1 + changePercent);
-            newPrice = Math.max(0.01, newPrice);
-            stock.price = newPrice;
-            log(eventDesc);
-            continue;
-        }
-        // 商战处理
-        if (inWar) {
-            let war = businessWars.find(w => w.stockIdx1 === i || w.stockIdx2 === i);
-            let otherIdx = (war.stockIdx1 === i) ? war.stockIdx2 : war.stockIdx1;
-            let otherStock = stocks[otherIdx];
-            let bothDown = Math.random() < 0.3;
-            let myChange = 0, otherChange = 0;
-            if (bothDown) {
-                myChange = -(0.05 + Math.random() * 0.15);
-                otherChange = -(0.05 + Math.random() * 0.15);
-            } else {
-                let myDir = Math.random() < 0.5 ? 1 : -1;
-                myChange = myDir * (0.05 + Math.random() * 0.15);
-                otherChange = -myChange;
-            }
-            let newMyPrice = stock.price * (1 + myChange);
-            let newOtherPrice = otherStock.price * (1 + otherChange);
-            newMyPrice = Math.max(0.01, newMyPrice);
-            newOtherPrice = Math.max(0.01, newOtherPrice);
-            stock.price = newMyPrice;
-            otherStock.price = newOtherPrice;
-            log(`⚔️ 商战持续：${stock.name} ${myChange>0?'涨':'跌'} ${Math.abs(myChange*100).toFixed(1)}%，${otherStock.name} ${otherChange>0?'涨':'跌'} ${Math.abs(otherChange*100).toFixed(1)}%`);
-            continue;
-        }
-        // 正常波动
-        let upProb = STOCK_UP_PROB[stockLevel];
-        let isUp = Math.random() < upProb;
-        let amplitude = 0.03 + Math.random() * 0.07;
-        if (isUp) amplitude *= STOCK_GAIN_MULTIPLIER[stockLevel];
-        else amplitude *= STOCK_LOSS_MULTIPLIER[stockLevel];
-        let changePercent = isUp ? amplitude : -amplitude;
-        let newPrice = stock.price * (1 + changePercent);
-        newPrice = Math.max(0.01, newPrice);
-        stock.price = newPrice;
-    }
-    // 根据价格变化更新委买量/委卖量
-    for (let i = 0; i < stocks.length; i++) {
-        let stock = stocks[i];
-        let priceChange = (stock.price - stock.prevPrice) / stock.prevPrice;
-        let levelMultiplier = 0.5 + (LEVELS.indexOf(stockLevel) / 16);
-        let baseVol = 200 + Math.floor(Math.random() * 400);
-        let trendFactor = Math.min(0.5, Math.abs(priceChange) * 10);
-        if (priceChange > 0) {
-            stock.bidVol = Math.max(10, Math.floor(baseVol * levelMultiplier * (1 + trendFactor)));
-            stock.askVol = Math.max(10, Math.floor(baseVol * levelMultiplier * (1 - trendFactor)));
-        } else if (priceChange < 0) {
-            stock.bidVol = Math.max(10, Math.floor(baseVol * levelMultiplier * (1 - trendFactor)));
-            stock.askVol = Math.max(10, Math.floor(baseVol * levelMultiplier * (1 + trendFactor)));
-        } else {
-            stock.bidVol = Math.max(10, Math.floor(baseVol * levelMultiplier));
-            stock.askVol = Math.max(10, Math.floor(baseVol * levelMultiplier));
-        }
-    }
-    // 商战持续时间减少
-    for (let i = businessWars.length-1; i >= 0; i--) {
-        businessWars[i].duration--;
-        if (businessWars[i].duration <= 0) {
-            let war = businessWars[i];
-            log(`⚔️ 商战结束：${stocks[war.stockIdx1].name} 与 ${stocks[war.stockIdx2].name} 休战。`);
-            businessWars.splice(i,1);
-        }
-    }
-    // 触发新商战
-    if (stocks.length >= 2 && Math.random() < 0.02) {
-        let idx1 = Math.floor(Math.random() * stocks.length);
-        let idx2 = Math.floor(Math.random() * stocks.length);
-        if (idx1 !== idx2 && !businessWars.some(w => (w.stockIdx1===idx1 && w.stockIdx2===idx2) || (w.stockIdx1===idx2 && w.stockIdx2===idx1))) {
-            let duration = 3 + Math.floor(Math.random() * 5);
-            businessWars.push({ stockIdx1: idx1, stockIdx2: idx2, duration: duration });
-            log(`⚔️ 商战爆发！${stocks[idx1].name} 与 ${stocks[idx2].name} 开战，预计持续 ${duration} 天。`);
-        }
-    }
-    // 倒闭事件
-    if (stocks.length > 1 && Math.random() < 0.01) {
-        let idx = Math.floor(Math.random() * stocks.length);
-        let deadStock = stocks[idx];
-        if (State[`stock_${idx}`] > 0) {
-            State[`stock_${idx}`] = 0;
-            log(`💀 ${deadStock.name} 公司倒闭！你持有的股份化为乌有。`);
-        } else {
-            log(`💀 ${deadStock.name} 公司倒闭！股价归零并从股市摘牌。`);
-        }
-        stocks.splice(idx,1);
-        for (let w of businessWars) {
-            if (w.stockIdx1 === idx) w.stockIdx1 = -1;
-            if (w.stockIdx2 === idx) w.stockIdx2 = -1;
-        }
-        businessWars = businessWars.filter(w => w.stockIdx1 !== -1 && w.stockIdx2 !== -1);
-    }
-}
-
-function showStockPanel() {
-    hidePanels();
-    let html = '<table class="stock-table"><thead>君<th>股票</th><th>现价</th><th>委买量</th><th>委卖量</th><th>持有</th><th>买入</th><th>卖出</th> </thead><tbody>';
-    for (let i = 0; i < stocks.length; i++) {
-        let stock = stocks[i];
-        let hold = State[`stock_${i}`] || 0;
-        html += `汽笛
-                <td>${stock.name}</td>
-                <td>${stock.price.toFixed(2)}</td>
-                <td>${stock.bidVol}</td>
-                <td>${stock.askVol}</td>
-                <td>${hold}</td>
-                <td><input type="number" id="buy_${i}" class="stock-input" min="1" value="1"> <button onclick="buyStock(${i})">买入</button></td>
-                <td><input type="number" id="sell_${i}" class="stock-input" min="1" value="1"> <button onclick="sellStock(${i})">卖出</button></td>
-             </tr>`;
-    }
-    html += '</tbody> </table><button onclick="sellAllStocks()" class="btn-accent">一键卖出全部</button><button onclick="hidePanels()">关闭</button>';
-    document.getElementById('stock-list').innerHTML = html;
-    document.getElementById('stock-panel').classList.remove('hidden');
-}
-function buyStock(idx) {
-    let amount = parseInt(document.getElementById(`buy_${idx}`).value);
-    if (isNaN(amount) || amount <= 0) return;
-    let stock = stocks[idx];
-    if (amount > stock.askVol) { alert(`委卖量不足，当前可买 ${stock.askVol} 股`); return; }
-    let cost = stock.price * amount;
-    ensureMoney(cost);
-    State[`stock_${idx}`] = (State[`stock_${idx}`] || 0) + amount;
-    stock.askVol -= amount;
-    log(`买入 ${stock.name} ${amount}股，花费 ${cost.toFixed(2)}💰`);
-    hidePanels();
-    updateUI();
-}
-function sellStock(idx) {
-    let amount = parseInt(document.getElementById(`sell_${idx}`).value);
-    if (isNaN(amount) || amount <= 0) return;
-    let stock = stocks[idx];
-    let hold = State[`stock_${idx}`] || 0;
-    if (amount > hold) { alert(`持有数量不足，当前持有 ${hold} 股`); return; }
-    if (amount > stock.bidVol) { alert(`委买量不足，当前可卖 ${stock.bidVol} 股`); return; }
-    let income = stock.price * amount;
-    State.money += income;
-    State[`stock_${idx}`] = hold - amount;
-    stock.bidVol -= amount;
-    log(`卖出 ${stock.name} ${amount}股，收入 ${income.toFixed(2)}💰`);
-    hidePanels();
-    updateUI();
-}
-function sellAllStocks() {
-    let totalIncome = 0;
-    for (let i = 0; i < stocks.length; i++) {
-        let stock = stocks[i];
-        let hold = State[`stock_${i}`] || 0;
-        if (hold > 0) {
-            let canSell = Math.min(hold, stock.bidVol);
-            if (canSell > 0) {
-                let income = stock.price * canSell;
-                totalIncome += income;
-                State.money += income;
-                State[`stock_${i}`] = hold - canSell;
-                stock.bidVol -= canSell;
-                log(`卖出 ${stock.name} ${canSell}股，收入 ${income.toFixed(2)}💰`);
-                if (hold - canSell > 0) log(`剩余 ${hold - canSell}股因委买量不足未能卖出`);
-            } else {
-                log(`未能卖出 ${stock.name}，委买量为0`);
-            }
-        }
-    }
-    if (totalIncome > 0) log(`一键卖出完成，总收入 ${totalIncome.toFixed(2)} 元`);
-    else alert('没有可卖出的股票或委买量不足');
-    hidePanels();
-    updateUI();
-}
-
-// 贷款系统
 let State = {
     daysLeft: 200, weekday: 0, money: 0, determination: 50, stress: 20, charm: 60,
-    bankLoan: 0, usuryLoan: 0, bankLoanDueDays: 30, facility: 0,
+    bankLoan: 0, usuryLoan: 0, facility: 0,
     subjects: JSON.parse(JSON.stringify(SUBJECTS)), loves: [], isGraduated: false, difficulty: 'hard',
     teacherEventToday: false, examCountdown: 30, gender: 'male', loveLetterAttempts: 0,
     stocks: JSON.parse(JSON.stringify(stocks))
 };
-function takeBankLoan(amt) {
-    let limit = State.difficulty === 'easy' ? 10000 : 6000;
-    if (State.bankLoan + amt > limit) { alert(`银行贷款上限 ${limit} 元`); return; }
-    State.money += amt;
-    State.bankLoan += amt;
-    log(`银行贷款 ${amt} 元`, `资金+${amt}`);
-    hidePanels(); updateUI();
-}
-function takeUsuryLoan(amt) {
-    State.money += amt;
-    State.usuryLoan += amt;
-    log(`高利贷 ${amt} 元`, `资金+${amt}`);
-    hidePanels(); updateUI();
-}
-function repayAllBankLoan() {
-    if (State.bankLoan === 0) return alert('没有银行贷款');
-    if (State.money < State.bankLoan) {
-        let need = State.bankLoan - State.money;
-        State.usuryLoan += need;
-        State.money = 0;
-        log(`零花钱不足，自动借高利贷 ${need} 元偿还银行贷款`, `高利贷+${need}`);
-    } else {
-        State.money -= State.bankLoan;
-    }
-    State.bankLoan = 0;
-    log(`还清银行贷款`);
-    hidePanels(); updateUI();
-}
-function repayAllUsuryLoan() {
-    if (State.usuryLoan === 0) return alert('没有高利贷');
-    if (State.money < State.usuryLoan) { alert('零花钱不足，无法还清高利贷！'); return; }
-    State.money -= State.usuryLoan;
-    State.usuryLoan = 0;
-    log(`还清高利贷`);
-    hidePanels(); updateUI();
-}
-function ensureMoney(amount) {
-    if (State.money >= amount) { State.money -= amount; return true; }
-    let need = amount - State.money;
-    State.money = 0;
-    State.usuryLoan += need;
-    log(`⚠️ 零花钱不足，自动借高利贷 ${need} 元支付`, `高利贷+${need}`);
-    return true;
-}
 
-// 学科和恋爱基础函数
+// 辅助函数
 function getSubjectLevel(exp) { for(let i=LEVELS.length-1;i>=0;i--) if(exp>=LEVEL_THRESHOLD[i]) return LEVELS[i]; return 'E'; }
 function getLevelIndex(l) { return LEVELS.indexOf(l); }
 function getLevelColor(l) { return `var(--level-${l.toLowerCase()})`; }
@@ -525,6 +313,281 @@ function isWeekend() { return State.weekday===5||State.weekday===6; }
 function getAvgLevel() { let t=0; State.subjects.forEach(s=>t+=getLevelIndex(s.level)); return t/6; }
 function updateGrade() { let days=State.daysLeft; let grade=days>365?'高二':'高三冲刺'; document.getElementById('grade-display').innerHTML=`当前年级: ${grade}`; }
 
+// 股票更新函数
+function updateStocks() {
+    for (let i = 0; i < stocks.length; i++) stocks[i].prevPrice = stocks[i].price;
+    for (let i = 0; i < stocks.length; i++) {
+        let stock = stocks[i];
+        let inWar = businessWars.some(w => w.stockIdx1 === i || w.stockIdx2 === i);
+        if (Math.random() < 0.02) {
+            let isGood = Math.random() < 0.5;
+            let baseAmplitude = 0.2 + Math.random() * 0.6;
+            let changePercent = isGood ? baseAmplitude * STOCK_GAIN_MULTIPLIER[stockLevel] : -baseAmplitude * STOCK_LOSS_MULTIPLIER[stockLevel];
+            let eventDesc = isGood ? `🎉 ${stock.name} 发布重大利好！股价飙升 ${(changePercent*100).toFixed(1)}%` : `💥 ${stock.name} 爆出重大利空！股价暴跌 ${(-changePercent*100).toFixed(1)}%`;
+            let newPrice = stock.price * (1 + changePercent);
+            newPrice = Math.max(0.01, newPrice);
+            stock.price = newPrice;
+            log(eventDesc);
+            continue;
+        }
+        if (inWar) {
+            let war = businessWars.find(w => w.stockIdx1 === i || w.stockIdx2 === i);
+            let otherIdx = (war.stockIdx1 === i) ? war.stockIdx2 : war.stockIdx1;
+            let otherStock = stocks[otherIdx];
+            let bothDown = Math.random() < 0.3;
+            let myChange = 0, otherChange = 0;
+            if (bothDown) {
+                myChange = -(0.05 + Math.random() * 0.15);
+                otherChange = -(0.05 + Math.random() * 0.15);
+            } else {
+                let myDir = Math.random() < 0.5 ? 1 : -1;
+                myChange = myDir * (0.05 + Math.random() * 0.15);
+                otherChange = -myChange;
+            }
+            let newMyPrice = stock.price * (1 + myChange);
+            let newOtherPrice = otherStock.price * (1 + otherChange);
+            newMyPrice = Math.max(0.01, newMyPrice);
+            newOtherPrice = Math.max(0.01, newOtherPrice);
+            stock.price = newMyPrice;
+            otherStock.price = newOtherPrice;
+            log(`⚔️ 商战持续：${stock.name} ${myChange>0?'涨':'跌'} ${Math.abs(myChange*100).toFixed(1)}%，${otherStock.name} ${otherChange>0?'涨':'跌'} ${Math.abs(otherChange*100).toFixed(1)}%`);
+            continue;
+        }
+        let upProb = STOCK_UP_PROB[stockLevel];
+        let isUp = Math.random() < upProb;
+        let amplitude = 0.03 + Math.random() * 0.07;
+        if (isUp) amplitude *= STOCK_GAIN_MULTIPLIER[stockLevel];
+        else amplitude *= STOCK_LOSS_MULTIPLIER[stockLevel];
+        let changePercent = isUp ? amplitude : -amplitude;
+        let newPrice = stock.price * (1 + changePercent);
+        newPrice = Math.max(0.01, newPrice);
+        stock.price = newPrice;
+    }
+    for (let i = 0; i < stocks.length; i++) {
+        let stock = stocks[i];
+        let priceChange = (stock.price - stock.prevPrice) / stock.prevPrice;
+        let levelMultiplier = 0.5 + (LEVELS.indexOf(stockLevel) / 16);
+        let baseVol = 200 + Math.floor(Math.random() * 400);
+        let trendFactor = Math.min(0.5, Math.abs(priceChange) * 10);
+        if (priceChange > 0) {
+            stock.bidVol = Math.max(10, Math.floor(baseVol * levelMultiplier * (1 + trendFactor)));
+            stock.askVol = Math.max(10, Math.floor(baseVol * levelMultiplier * (1 - trendFactor)));
+        } else if (priceChange < 0) {
+            stock.bidVol = Math.max(10, Math.floor(baseVol * levelMultiplier * (1 - trendFactor)));
+            stock.askVol = Math.max(10, Math.floor(baseVol * levelMultiplier * (1 + trendFactor)));
+        } else {
+            stock.bidVol = Math.max(10, Math.floor(baseVol * levelMultiplier));
+            stock.askVol = Math.max(10, Math.floor(baseVol * levelMultiplier));
+        }
+    }
+    for (let i = businessWars.length-1; i >= 0; i--) {
+        businessWars[i].duration--;
+        if (businessWars[i].duration <= 0) {
+            let war = businessWars[i];
+            log(`⚔️ 商战结束：${stocks[war.stockIdx1].name} 与 ${stocks[war.stockIdx2].name} 休战。`);
+            businessWars.splice(i,1);
+        }
+    }
+    if (stocks.length >= 2 && Math.random() < 0.02) {
+        let idx1 = Math.floor(Math.random() * stocks.length);
+        let idx2 = Math.floor(Math.random() * stocks.length);
+        if (idx1 !== idx2 && !businessWars.some(w => (w.stockIdx1===idx1 && w.stockIdx2===idx2) || (w.stockIdx1===idx2 && w.stockIdx2===idx1))) {
+            let duration = 3 + Math.floor(Math.random() * 5);
+            businessWars.push({ stockIdx1: idx1, stockIdx2: idx2, duration: duration });
+            log(`⚔️ 商战爆发！${stocks[idx1].name} 与 ${stocks[idx2].name} 开战，预计持续 ${duration} 天。`);
+        }
+    }
+    if (stocks.length > 1 && Math.random() < 0.01) {
+        let idx = Math.floor(Math.random() * stocks.length);
+        let deadStock = stocks[idx];
+        if (State[`stock_${idx}`] > 0) {
+            State[`stock_${idx}`] = 0;
+            log(`💀 ${deadStock.name} 公司倒闭！你持有的股份化为乌有。`);
+        } else {
+            log(`💀 ${deadStock.name} 公司倒闭！股价归零并从股市摘牌。`);
+        }
+        stocks.splice(idx,1);
+        for (let w of businessWars) {
+            if (w.stockIdx1 === idx) w.stockIdx1 = -1;
+            if (w.stockIdx2 === idx) w.stockIdx2 = -1;
+        }
+        businessWars = businessWars.filter(w => w.stockIdx1 !== -1 && w.stockIdx2 !== -1);
+    }
+}
+
+// 股票界面 (增加一键买入全部)
+function showStockPanel() {
+    hidePanels();
+    let html = '<table class="stock-table"><thead><tr><th>股票</th><th>现价</th><th>委买量</th><th>委卖量</th><th>持有</th><th>买入</th><th>卖出</th><th>快捷操作</th></tr></thead><tbody>';
+    for (let i = 0; i < stocks.length; i++) {
+        let stock = stocks[i];
+        let hold = State[`stock_${i}`] || 0;
+        html += `<tr>
+                    <td>${stock.name}</td>
+                    <td>${stock.price.toFixed(2)}</td>
+                    <td>${stock.bidVol}</td>
+                    <td>${stock.askVol}</td>
+                    <td>${hold}</td>
+                    <td><input type="number" id="buy_${i}" class="stock-input" min="1" value="1"> <button onclick="buyStock(${i})">买入</button></td>
+                    <td><input type="number" id="sell_${i}" class="stock-input" min="1" value="1"> <button onclick="sellStock(${i})">卖出</button></td>
+                    <td><button onclick="buyAllStock(${i})" class="btn-accent">一键买入全部</button> <button onclick="sellAllOneStock(${i})" class="btn-danger">一键卖出全部</button></td>
+                 </tr>`;
+    }
+    html += '</tbody></table><button onclick="hidePanels()">关闭</button>';
+    document.getElementById('stock-list').innerHTML = html;
+    document.getElementById('stock-panel').classList.remove('hidden');
+}
+// 买入指定数量
+function buyStock(idx) {
+    let amount = parseInt(document.getElementById(`buy_${idx}`).value);
+    if (isNaN(amount) || amount <= 0) return;
+    let stock = stocks[idx];
+    if (amount > stock.askVol) { alert(`委卖量不足，当前可买 ${stock.askVol} 股`); return; }
+    let cost = stock.price * amount;
+    ensureMoney(cost);
+    State[`stock_${idx}`] = (State[`stock_${idx}`] || 0) + amount;
+    stock.askVol -= amount;
+    log(`买入 ${stock.name} ${amount}股，花费 ${cost.toFixed(2)}💰`);
+    hidePanels();
+    updateUI();
+}
+// 卖出指定数量
+function sellStock(idx) {
+    let amount = parseInt(document.getElementById(`sell_${idx}`).value);
+    if (isNaN(amount) || amount <= 0) return;
+    let stock = stocks[idx];
+    let hold = State[`stock_${idx}`] || 0;
+    if (amount > hold) { alert(`持有数量不足，当前持有 ${hold} 股`); return; }
+    if (amount > stock.bidVol) { alert(`委买量不足，当前可卖 ${stock.bidVol} 股`); return; }
+    let income = stock.price * amount;
+    State.money += income;
+    State[`stock_${idx}`] = hold - amount;
+    stock.bidVol -= amount;
+    log(`卖出 ${stock.name} ${amount}股，收入 ${income.toFixed(2)}💰`);
+    hidePanels();
+    updateUI();
+}
+// 一键买入全部（买光委卖量）
+function buyAllStock(idx) {
+    let stock = stocks[idx];
+    if (stock.askVol === 0) { alert(`委卖量为0，无法买入`); return; }
+    let amount = stock.askVol;
+    let cost = stock.price * amount;
+    ensureMoney(cost);
+    State[`stock_${idx}`] = (State[`stock_${idx}`] || 0) + amount;
+    stock.askVol = 0;
+    log(`一键买入 ${stock.name} ${amount}股，花费 ${cost.toFixed(2)}💰`);
+    hidePanels();
+    updateUI();
+}
+// 一键卖出全部（卖光持有，但受委买量限制）
+function sellAllOneStock(idx) {
+    let stock = stocks[idx];
+    let hold = State[`stock_${idx}`] || 0;
+    if (hold === 0) { alert(`没有持有 ${stock.name}`); return; }
+    let canSell = Math.min(hold, stock.bidVol);
+    if (canSell === 0) { alert(`委买量为0，无法卖出`); return; }
+    let income = stock.price * canSell;
+    State.money += income;
+    State[`stock_${idx}`] = hold - canSell;
+    stock.bidVol -= canSell;
+    log(`一键卖出 ${stock.name} ${canSell}股，收入 ${income.toFixed(2)}💰`);
+    if (hold - canSell > 0) log(`剩余 ${hold - canSell}股因委买量不足未能卖出`);
+    hidePanels();
+    updateUI();
+}
+function sellAllStocks() {
+    let totalIncome = 0;
+    for (let i = 0; i < stocks.length; i++) {
+        let stock = stocks[i];
+        let hold = State[`stock_${i}`] || 0;
+        if (hold > 0) {
+            let canSell = Math.min(hold, stock.bidVol);
+            if (canSell > 0) {
+                let income = stock.price * canSell;
+                totalIncome += income;
+                State.money += income;
+                State[`stock_${i}`] = hold - canSell;
+                stock.bidVol -= canSell;
+                log(`卖出 ${stock.name} ${canSell}股，收入 ${income.toFixed(2)}💰`);
+                if (hold - canSell > 0) log(`剩余 ${hold - canSell}股因委买量不足未能卖出`);
+            } else {
+                log(`未能卖出 ${stock.name}，委买量为0`);
+            }
+        }
+    }
+    if (totalIncome > 0) log(`一键卖出完成，总收入 ${totalIncome.toFixed(2)} 元`);
+    else alert('没有可卖出的股票或委买量不足');
+    hidePanels();
+    updateUI();
+}
+
+// 贷款系统
+function takeBankLoan(amt) {
+    let limit = State.difficulty === 'easy' ? 10000 : 6000;
+    if (State.bankLoan + amt > limit) { alert(`银行贷款上限 ${limit} 元`); return; }
+    State.money += amt;
+    State.bankLoan += amt;
+    log(`银行贷款 ${amt} 元`, `资金+${amt}`);
+    hidePanels(); updateUI();
+}
+function takeUsuryLoan(amt) {
+    State.money += amt;
+    State.usuryLoan += amt;
+    log(`高利贷 ${amt} 元`, `资金+${amt}`);
+    hidePanels(); updateUI();
+}
+function repayAllBankLoan() {
+    if (State.bankLoan === 0) return alert('没有银行贷款');
+    if (State.money < State.bankLoan) {
+        let need = State.bankLoan - State.money;
+        State.usuryLoan += need;
+        State.money = 0;
+        log(`零花钱不足，自动借高利贷 ${need} 元偿还银行贷款`, `高利贷+${need}`);
+    } else {
+        State.money -= State.bankLoan;
+    }
+    State.bankLoan = 0;
+    log(`还清银行贷款`);
+    hidePanels(); updateUI();
+}
+function repayAllUsuryLoan() {
+    if (State.usuryLoan === 0) return alert('没有高利贷');
+    if (State.money < State.usuryLoan) { alert('零花钱不足，无法还清高利贷！'); return; }
+    State.money -= State.usuryLoan;
+    State.usuryLoan = 0;
+    log(`还清高利贷`);
+    hidePanels(); updateUI();
+}
+function repayBankLoanPartial() {
+    let amount = parseInt(document.getElementById('bank-repay-amount').value);
+    if (isNaN(amount) || amount <= 0) { alert('请输入有效金额'); return; }
+    if (amount > State.bankLoan) { alert('还款金额超过贷款总额'); return; }
+    if (State.money < amount) { alert('零花钱不足'); return; }
+    State.money -= amount;
+    State.bankLoan -= amount;
+    log(`偿还银行贷款 ${amount} 元`, `银行贷款剩余 ${State.bankLoan}`);
+    hidePanels(); updateUI();
+}
+function repayUsuryLoanPartial() {
+    let amount = parseInt(document.getElementById('usury-repay-amount').value);
+    if (isNaN(amount) || amount <= 0) { alert('请输入有效金额'); return; }
+    if (amount > State.usuryLoan) { alert('还款金额超过高利贷总额'); return; }
+    if (State.money < amount) { alert('零花钱不足'); return; }
+    State.money -= amount;
+    State.usuryLoan -= amount;
+    log(`偿还高利贷 ${amount} 元`, `高利贷剩余 ${State.usuryLoan}`);
+    hidePanels(); updateUI();
+}
+function ensureMoney(amount) {
+    if (State.money >= amount) { State.money -= amount; return true; }
+    let need = amount - State.money;
+    State.money = 0;
+    State.usuryLoan += need;
+    log(`⚠️ 零花钱不足，自动借高利贷 ${need} 元支付`, `高利贷+${need}`);
+    return true;
+}
+
 // 提升形象
 function improveImage() {
     let cost = State.difficulty === 'easy' ? 100 + Math.floor(Math.random() * 101) : 150 + Math.floor(Math.random() * 101);
@@ -546,19 +609,42 @@ function improveImage() {
     advanceDay();
 }
 
-// 打工模糊提示
+// 打工（随机效果）
 function doWork(type) {
-    let reward = 0, stressInc = 0, detChange = 0, charmInc = 0;
-    if(type==='easy'){ reward=80; stressInc=5; }
-    else if(type==='hard'){ reward=200; stressInc=15; detChange=-2; }
-    else if(type==='tutor'){
+    let reward, stressInc, detChange, charmInc;
+    if (type === 'easy') {
+        reward = 50 + Math.floor(Math.random() * 80);
+        stressInc = 2 + Math.floor(Math.random() * 6);
+        detChange = Math.random() < 0.5 ? 1 : -1;
+        charmInc = Math.random() < 0.3 ? 1 : 0;
+    } else if (type === 'hard') {
+        reward = 30 + Math.floor(Math.random() * 60);
+        stressInc = 6 + Math.floor(Math.random() * 10);
+        detChange = Math.random() < 0.7 ? -2 : 1;
+        charmInc = Math.random() < 0.2 ? 1 : 0;
+    } else if (type === 'tutor') {
         let baseProb = getAvgLevel() / 7;
-        if(State.difficulty==='hard') baseProb *= 0.6;
+        if (State.difficulty === 'hard') baseProb *= 0.6;
         let success = Math.random() < baseProb;
-        if(success){ reward=120; detChange=2; charmInc=1; }
-        else { let fine=80; ensureMoney(fine); State.determination=Math.max(0,State.determination-3); log('家教被投诉退款', `损失了${fine}元，决心下降`); hidePanels(); advanceDay(); return; }
+        if (success) {
+            reward = 80 + Math.floor(Math.random() * 80);
+            detChange = 2 + Math.floor(Math.random() * 3);
+            charmInc = 1 + Math.floor(Math.random() * 2);
+            stressInc = 3 + Math.floor(Math.random() * 5);
+        } else {
+            let fine = 60 + Math.floor(Math.random() * 60);
+            ensureMoney(fine);
+            State.determination = Math.max(0, State.determination - (3 + Math.floor(Math.random() * 4)));
+            log('家教被投诉退款', `损失了${fine}元，决心下降`);
+            hidePanels(); advanceDay(); return;
+        }
     }
-    if(State.difficulty==='hard'){ reward = Math.floor(reward * 0.5); stressInc = Math.floor(stressInc * 2); detChange = detChange * 2; charmInc = Math.floor(charmInc * 0.5); }
+    if (State.difficulty === 'hard' && type !== 'tutor') {
+        reward = Math.floor(reward * 0.7);
+        stressInc = Math.floor(stressInc * 1.5);
+        detChange = detChange * 2;
+        charmInc = Math.floor(charmInc * 0.5);
+    }
     State.money += reward;
     State.stress = Math.min(100, State.stress + stressInc);
     State.determination = Math.min(100, Math.max(0, State.determination + detChange));
@@ -576,13 +662,13 @@ function showExam(isGaokao = false) {
     document.getElementById('exam-title').innerText = title;
     let thead = document.getElementById('exam-thead');
     let tbody = document.getElementById('exam-tbody');
-    thead.innerHTML = '君<th>科目</th><th>得分</th> </thead>';
+    thead.innerHTML = '<tr><th>科目</th><th>得分</th></tr>';
     tbody.innerHTML = '';
     let totalScore = 0;
     let subjectScores = [];
     for (let sub of State.subjects) {
         let score = getScoreFromExp(sub.exp, sub.max);
-        subjectScores.push({ name: sub.name, score: score });
+        subjectScores.push({ name: sub.name, score: score, max: sub.max });
         totalScore += score;
     }
     let stressMod = 1 - (State.stress / 200);
@@ -594,11 +680,21 @@ function showExam(isGaokao = false) {
     for (let s of subjectScores) {
         let row = document.createElement('tr');
         let finalScore = Math.floor(s.score * stressMod);
-        row.innerHTML = ` <td>${s.name}</td><td class="exam-cell">${finalScore}</td> `;
+        let ratio = finalScore / s.max;
+        let level = 'E';
+        if (ratio >= 0.95) level = 'SSS';
+        else if (ratio >= 0.9) level = 'SS';
+        else if (ratio >= 0.85) level = 'S';
+        else if (ratio >= 0.8) level = 'A';
+        else if (ratio >= 0.7) level = 'B';
+        else if (ratio >= 0.6) level = 'C';
+        else if (ratio >= 0.5) level = 'D';
+        let color = getLevelColor(level);
+        row.innerHTML = `<td>${s.name}</td><td class="exam-cell" style="background:${color}; color:white; text-shadow:0 1px 2px black;">${finalScore}</td>`;
         tbody.appendChild(row);
     }
     let totalRow = document.createElement('tr');
-    totalRow.innerHTML = ` <td><strong>总分</strong></td><td class="exam-cell"><strong>${totalScore}</strong></td> `;
+    totalRow.innerHTML = `<td><strong>总分</strong></td><td class="exam-cell" style="background:var(--primary); color:white;"><strong>${totalScore}</strong></td>`;
     tbody.appendChild(totalRow);
     let rank = "", reward = 0;
     if (totalScore >= 680) { rank = "全省前100名"; reward = 1000; }
@@ -653,7 +749,7 @@ function showGaokaoResult() {
     document.getElementById('gaokao-modal').classList.remove('hidden');
 }
 
-// 随机事件处理（强制选择）
+// 随机事件函数（与之前相同，省略部分重复内容，但保证完整）
 function triggerTeacherEvent() {
     State.teacherEventToday = true;
     let sub = State.subjects[Math.floor(Math.random() * State.subjects.length)];
@@ -953,6 +1049,7 @@ function studyStock() {
     advanceDay();
 }
 
+// 初始化女生
 function initLoves() {
     let isMale = State.gender === 'male';
     let crushName = document.getElementById('name-crush')?.value.trim() || (isMale ? '柳如烟' : '林逸飞');
@@ -967,6 +1064,8 @@ function initLoves() {
     ];
     State.loves.forEach(l => updateDisplayFeel(l));
 }
+
+// 性别切换（仅更新标签文字）
 function updateGenderText() {
     let isMale = document.querySelector('input[name="gender"]:checked').value === 'male';
     State.gender = isMale ? 'male' : 'female';
@@ -983,6 +1082,7 @@ function updateGenderText() {
         document.getElementById('label-normal2').innerHTML = '普通男生';
     }
 }
+
 function startGame(diff) {
     State.difficulty = diff;
     let days = parseInt(document.getElementById('start-days').value);
@@ -1048,6 +1148,7 @@ function updateUI() {
     document.getElementById('social-panel').innerHTML = lovesHtml;
     updateActionButtons();
 }
+
 function updateActionButtons() {
     let grid = document.getElementById('action-buttons');
     let isWeekendDay = isWeekend();
@@ -1076,9 +1177,9 @@ function updateActionButtons() {
         grid.appendChild(card);
     });
 }
+
 function advanceDay() {
     if (State.isGraduated) return;
-    // 贷款利息
     if (State.bankLoan > 0) {
         let interest = Math.floor(State.bankLoan * 0.01);
         if (interest < 1) interest = 1;
@@ -1101,7 +1202,6 @@ function advanceDay() {
     State.weekday = (State.weekday + 1) % 7;
     updateGrade();
     updateStocks();
-    // 银行贷款强制还款（每30天）
     if (State.daysLeft % 30 === 0 && State.bankLoan > 0) {
         let total = State.bankLoan;
         if (State.money >= total) {
@@ -1204,11 +1304,16 @@ function handleSickGaokao(choice) {
         document.getElementById('gaokao-modal').classList.remove('hidden');
     }
 }
-window.addEventListener('DOMContentLoaded', () => { updateGenderText(); document.querySelectorAll('input[name="gender"]').forEach(r => r.addEventListener('change', updateGenderText)); });
+
+window.addEventListener('DOMContentLoaded', () => {
+    updateGenderText();
+    document.querySelectorAll('input[name="gender"]').forEach(r => r.addEventListener('change', updateGenderText));
+});
 window.startGame = startGame;
 window.showStudyPanel = showStudyPanel; window.showTrainPanel = showTrainPanel; window.showDatePanel = showDatePanel; window.showWorkPanel = showWorkPanel; window.showLoanPanel = showLoanPanel; window.showStockPanel = showStockPanel; window.studyStock = studyStock; window.improveImage = improveImage;
 window.doTrain = doTrain; window.doDate = doDate; window.doWork = doWork; window.doRest = doRest; window.doSlack = doSlack; window.hidePanels = function () { document.querySelectorAll('.sub-panel').forEach(p => p.classList.add('hidden')); };
-window.handleTeacher = handleTeacher; window.handleLoveLetter = handleLoveLetter; window.closeEventModal = closeEventModal; window.askForMoney = askForMoney; window.closeExam = closeExam; window.takeBankLoan = takeBankLoan; window.takeUsuryLoan = takeUsuryLoan; window.repayAllBankLoan = repayAllBankLoan; window.repayAllUsuryLoan = repayAllUsuryLoan; window.closePhonePanel = closePhonePanel; window.handleSports = handleSports; window.showConfessionTo = showConfessionTo; window.breakup = breakup; window.closeCaughtPanel = closeCaughtPanel; window.selectMarriage = selectMarriage; window.handleConfession = handleConfession; window.closeParentPanel = closeParentPanel; window.buyStock = buyStock; window.sellStock = sellStock; window.sellAllStocks = sellAllStocks; window.handleSickGaokao = handleSickGaokao;
+window.handleTeacher = handleTeacher; window.handleLoveLetter = handleLoveLetter; window.closeEventModal = closeEventModal; window.askForMoney = askForMoney; window.closeExam = closeExam; window.takeBankLoan = takeBankLoan; window.takeUsuryLoan = takeUsuryLoan; window.repayAllBankLoan = repayAllBankLoan; window.repayAllUsuryLoan = repayAllUsuryLoan; window.repayBankLoanPartial = repayBankLoanPartial; window.repayUsuryLoanPartial = repayUsuryLoanPartial;
+window.closePhonePanel = closePhonePanel; window.handleSports = handleSports; window.showConfessionTo = showConfessionTo; window.breakup = breakup; window.closeCaughtPanel = closeCaughtPanel; window.selectMarriage = selectMarriage; window.handleConfession = handleConfession; window.closeParentPanel = closeParentPanel; window.buyStock = buyStock; window.sellStock = sellStock; window.buyAllStock = buyAllStock; window.sellAllOneStock = sellAllOneStock; window.sellAllStocks = sellAllStocks; window.handleSickGaokao = handleSickGaokao;
 function closeExam() { /* already defined */ }
 function selectMarriage(lid) { /* already defined */ }
 function restartGame() { location.reload(); }
